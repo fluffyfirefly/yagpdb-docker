@@ -4,10 +4,7 @@ WORKDIR /appbuild/yagpdb
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Handle templates for plugins automatically
-COPY */assets/*.html cmd/yagpdb/templates/plugins/
 COPY . .
-
 WORKDIR /appbuild/yagpdb/cmd/yagpdb
 RUN CGO_ENABLED=0 GOOS=linux go build -v -ldflags "-X github.com/jonas747/yagpdb/common.VERSION=$(git describe --tags)"
 
@@ -27,8 +24,6 @@ RUN apk --no-cache add \
 	su-exec \
 	tzdata
 
-COPY --from=builder /appbuild/yagpdb/cmd/yagpdb/static /app/static/
-COPY --from=builder /appbuild/yagpdb/cmd/yagpdb/templates /app/templates/
 COPY --from=builder /appbuild/yagpdb/cmd/yagpdb/yagpdb /app/yagpdb
 
 RUN set -eux; \
